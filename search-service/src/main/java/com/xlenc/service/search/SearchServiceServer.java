@@ -11,6 +11,15 @@ import com.wordnik.swagger.reader.ClassReaders;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentFactory;
+
+import java.util.Date;
 
 /**
  * User: Michael Williams
@@ -27,7 +36,7 @@ public class SearchServiceServer extends Service<SearchRestServiceConfiguration>
     @Override
     public void run(SearchRestServiceConfiguration configuration, Environment environment) throws Exception {
         setUpSwagger(environment);
-        setUpSearchService(environment);
+        setUpSearchService(configuration, environment);
     }
 
     private void setUpSwagger(Environment environment) {
@@ -41,9 +50,11 @@ public class SearchServiceServer extends Service<SearchRestServiceConfiguration>
     }
 
 
-    private void setUpSearchService(Environment environment) {
+    private void setUpSearchService(SearchRestServiceConfiguration configuration,Environment environment) {
 
-        final SearchServer searchServer = new SearchServer();
+//        System.out.println("*****************SERVERNAME******"+configuration.getSearchServerConfiguration().getHost());
+
+        final SearchServer searchServer = new SearchServer(configuration.getSearchServerConfiguration().getHost(), configuration.getSearchServerConfiguration().getPort());
         environment.manage(searchServer);
 
         final SearchService searchService = new SearchService(searchServer);

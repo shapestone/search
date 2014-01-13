@@ -1,6 +1,6 @@
 package com.xlenc.service.search;
 
-import java.util.Map;
+import com.xlenc.service.search.SchemaTypes.question.QuestionData;
 
 /**
  * User: Michael Williams
@@ -15,8 +15,19 @@ public class SearchService {
         this.searchPersistence = searchPersistence;
     }
 
-    public Map<String, Object> addIndexItem(String index, String type, String id, Map<String, Object> map) {
-        return searchPersistence.addIndexItem(index, type, id, map);
+    public Object updateQuestion(String index, String type, String id, QuestionData itemToIndex) {
+        return searchPersistence.updateQuestion(index, type, id, itemToIndex);
     }
 
+    public Object addQuestion(String index, String type, QuestionData itemToIndex) {
+        return searchPersistence.addQuestion(index, type, itemToIndex);
+    }
+
+    public QuestionData getQuestion(String index, String type, String id) {
+        return searchPersistence.getQuestionData(index, type, id);
+    }
+
+    public Object deleteQuestion(String index, String type, String id) {
+        return searchPersistence.deleteQuestion(index, type, id);
+    }
 }

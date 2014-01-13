@@ -1,6 +1,6 @@
 package com.xlenc.service.search;
 
-import java.util.Map;
+import com.xlenc.service.search.SchemaTypes.question.QuestionData;
 
 /**
  * User: Michael Williams
@@ -8,5 +8,8 @@ import java.util.Map;
  * Time: 11:55 AM
  */
 public interface SearchPersistence {
-    Map<String,Object> addIndexItem(String index, String type, String id, Map<String, Object> map);
+    Object updateQuestion(String index, String type, String id, QuestionData itemToIndex);
+    Object addQuestion(String index, String type, QuestionData itemToIndex);
+    QuestionData getQuestionData(String index, String type, String id);
+    Object deleteQuestion(String index, String type, String id);
 }
