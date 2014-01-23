@@ -1,6 +1,6 @@
 package com.xlenc.service.search;
 
-import com.xlenc.service.search.SchemaTypes.question.QuestionData;
+import com.xlenc.service.search.schematypes.question.QuestionData;
 
 /**
  * User: Michael Williams
@@ -15,19 +15,15 @@ public class SearchService {
         this.searchPersistence = searchPersistence;
     }
 
-    public Object updateQuestion(String index, String type, String id, QuestionData itemToIndex) {
-        return searchPersistence.updateQuestion(index, type, id, itemToIndex);
+    public Object updateIndexDocument(String index, String type, String id, Object itemToIndex) {
+        return searchPersistence.updateIndexDocument(index, type, id, itemToIndex);
     }
 
-    public Object addQuestion(String index, String type, QuestionData itemToIndex) {
-        return searchPersistence.addQuestion(index, type, itemToIndex);
+    public Object getIndexDocument(String index, String type, String id) {
+        return searchPersistence.getIndexDocument(index, type, id);
     }
 
-    public QuestionData getQuestion(String index, String type, String id) {
-        return searchPersistence.getQuestionData(index, type, id);
-    }
-
-    public Object deleteQuestion(String index, String type, String id) {
-        return searchPersistence.deleteQuestion(index, type, id);
+    public Object deleteIndexDocument(String index, String type, String id) {
+        return searchPersistence.deleteIndexDocument(index, type, id);
     }
 }

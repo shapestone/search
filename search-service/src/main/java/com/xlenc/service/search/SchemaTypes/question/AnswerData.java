@@ -1,4 +1,4 @@
-package com.xlenc.service.search.SchemaTypes.question;
+package com.xlenc.service.search.schematypes.question;
 
 /**
  * Created with IntelliJ IDEA.

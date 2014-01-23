@@ -1,4 +1,4 @@
-package com.xlenc.service.search.SchemaTypes.question;
+package com.xlenc.service.search.schematypes.question;
 
 import java.util.List;
 

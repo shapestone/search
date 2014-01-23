@@ -1,7 +1,11 @@
 package com.xlenc.service.search;
 
-import com.xlenc.service.search.SchemaTypes.question.QuestionData;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xlenc.service.search.schematypes.TypeInfo;
+import com.xlenc.service.search.schematypes.question.QuestionData;
 import com.yammer.metrics.annotation.Timed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -16,6 +20,7 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class SearchResource {
 
+    final static Logger logger = LoggerFactory.getLogger(SearchResource.class);
     private SearchService searchService;
 
     public SearchResource(SearchService searchService) {
@@ -25,22 +30,28 @@ public class SearchResource {
     @GET
     @Timed
     @Path("/{index}/{type}/{id}")
-    public Response getQuestion(@PathParam("index") String index,
+    public Response getIndexDocumentData(@PathParam("index") String index,
                                  @PathParam("type") String type,
                                  @PathParam("id") String id) {
-        final QuestionData questionData;
-        questionData = searchService.getQuestion(index, type, id);
-        return Response.ok(questionData).build();
+        if (!isValidType(type)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        final Object indexData;
+        indexData = searchService.getIndexDocument(index, type, id);
+        return Response.ok(indexData).build();
     }
 
     @DELETE
     @Timed
     @Path("/{index}/{type}/{id}")
-    public Response deleteQuestion(@PathParam("index") String index,
+    public Response deleteIndexDocument(@PathParam("index") String index,
                                 @PathParam("type") String type,
                                 @PathParam("id") String id) {
+        if (!isValidType(type)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         final Object stringObjectMap;
-        stringObjectMap = searchService.deleteQuestion(index, type, id);
+        stringObjectMap = searchService.deleteIndexDocument(index, type, id);
         return Response.ok(stringObjectMap).build();
     }
 
@@ -51,20 +62,30 @@ public class SearchResource {
     public Response updateIndexItem(@PathParam("index") String index,
                                  @PathParam("type") String type,
                                  @PathParam("id") String id,
-                                 QuestionData itemToIndex) {
+                                 String jsonObject) {
+        if (!isValidType(type)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         final Object stringObjectMap;
-        stringObjectMap = searchService.updateQuestion(index, type, id, itemToIndex);
+        Object itemToIndex = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            itemToIndex = objectMapper.readValue(jsonObject, TypeInfo.getMappingClasses().get(type));
+        } catch(Exception e) {
+            e.printStackTrace();
+            logger.error("Error occurred while trying to map input string to object!");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        stringObjectMap = searchService.updateIndexDocument(index, type, id, itemToIndex);
         return Response.ok(stringObjectMap).build();
     }
 
-    @POST
-    @Timed
-    @Path("/{index}/{type}")
-    public Response addIndexItem(@PathParam("index") String index,
-                                    @PathParam("type") String type,
-                                    QuestionData itemToIndex) {
-        final Object stringObjectMap;
-        stringObjectMap = searchService.addQuestion(index, type, itemToIndex);
-        return Response.ok(stringObjectMap).build();
+    private boolean isValidType(String type) {
+        if (TypeInfo.getTypeList().contains(type)) {
+            logger.error("Unrecognized 'type' specified!");
+            return true;
+        }
+        return false;
     }
+
 }

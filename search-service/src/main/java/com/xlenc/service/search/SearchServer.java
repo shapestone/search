@@ -2,7 +2,8 @@ package com.xlenc.service.search;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xlenc.service.search.SchemaTypes.question.QuestionData;
+import com.xlenc.service.search.schematypes.TypeInfo;
+import com.xlenc.service.search.schematypes.question.QuestionData;
 import com.yammer.dropwizard.lifecycle.Managed;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -36,20 +37,14 @@ public class SearchServer implements SearchPersistence, Managed {
     }
 
     @Override
-    public Object updateQuestion(String index, String type, String id, QuestionData itemToIndex) {
+    public Object updateIndexDocument(String index, String type, String id, Object itemToIndex) {
         if (itemToIndex == null) {
             return null;
         }
-
-        //TODO: the following check needs to be implemented properly. The return
-        // might not be null even if record doesn't exist.
-        if (getQuestionData(index, type, id)==null) {
-            return null;
-        }
-        return updateQuestionIndex(index, type, id, itemToIndex);
+        return updateIndex(index, type, id, itemToIndex);
     }
 
-    private Object updateQuestionIndex(String index, String type, String id, QuestionData itemToIndex) {
+    private Object updateIndex(String index, String type, String id, Object itemToIndex) {
         String source = null;
         ObjectMapper mapperES = new ObjectMapper();
         try{
@@ -68,28 +63,20 @@ public class SearchServer implements SearchPersistence, Managed {
     }
 
     @Override
-    public Object addQuestion(String index, String type, QuestionData itemToIndex) {
-        if (itemToIndex == null || itemToIndex.getId() == null || itemToIndex.getId().isEmpty()) {
-            return null;
-        }
-        return updateQuestionIndex(index, type, itemToIndex.getId(), itemToIndex);
-    }
-
-    @Override
-    public QuestionData getQuestionData(String index, String type, String id) {
+    public Object getIndexDocument(String index, String type, String id) {
         final GetResponse getResponse = client.prepareGet(index, type, id).execute().actionGet();
         ObjectMapper objectMapper = new ObjectMapper();
-        QuestionData questionData = null;
+        Object existingData = null;
         try {
-            questionData = objectMapper.readValue(getResponse.getSourceAsString(), QuestionData.class);
+            existingData = objectMapper.readValue(getResponse.getSourceAsString(), TypeInfo.getMappingClasses().get(type));
         }  catch (Exception e) {
             e.printStackTrace();
         }
-        return questionData;
+        return existingData;
     }
 
     @Override
-    public Object deleteQuestion(String index, String type, String id) {
+    public Object deleteIndexDocument(String index, String type, String id) {
         final DeleteResponse response = client.prepareDelete("twitter", "tweet", "1")
                 .execute()
                 .actionGet();
