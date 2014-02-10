@@ -1,8 +1,6 @@
 package com.xlenc.service.search;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xlenc.service.search.schematypes.TypeInfo;
-import com.xlenc.service.search.schematypes.question.QuestionData;
 import com.yammer.metrics.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,21 +60,22 @@ public class SearchResource {
     public Response updateIndexItem(@PathParam("index") String index,
                                  @PathParam("type") String type,
                                  @PathParam("id") String id,
-                                 String jsonObject) {
+                                 String data) {
         if (!isValidType(type)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         final Object stringObjectMap;
-        Object itemToIndex = null;
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            itemToIndex = objectMapper.readValue(jsonObject, TypeInfo.getMappingClasses().get(type));
-        } catch(Exception e) {
-            e.printStackTrace();
-            logger.error("Error occurred while trying to map input string to object!");
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        stringObjectMap = searchService.updateIndexDocument(index, type, id, itemToIndex);
+        // TODO: Add feature to accept a JSON schema as input and validate input against provided schema
+//        Object itemToIndex = null;
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            itemToIndex = objectMapper.readValue(jsonObject, TypeInfo.getMappingClasses().get(type));
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//            logger.error("Error occurred while trying to map input string to object!");
+//            return Response.status(Response.Status.BAD_REQUEST).build();
+//        }
+        stringObjectMap = searchService.updateIndexDocument(index, type, id, data);
         return Response.ok(stringObjectMap).build();
     }
 

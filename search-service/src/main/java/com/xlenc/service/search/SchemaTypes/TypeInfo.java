@@ -1,7 +1,5 @@
 package com.xlenc.service.search.schematypes;
 
-import com.xlenc.service.search.schematypes.question.QuestionData;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,17 +14,12 @@ import java.util.Map;
  */
 public class TypeInfo {
     private static List<String> typeList = new ArrayList<String>();
-    private static Map<String,Class> mappingClasses = new HashMap<String, Class>();
 
     static{
         typeList.add("questions");
-        mappingClasses.put("questions", QuestionData.class);
     }
 
     public static List<String> getTypeList(){
         return typeList;
-    }
-    public static Map<String,Class> getMappingClasses() {
-        return mappingClasses;
     }
 }

@@ -3,7 +3,6 @@ package com.xlenc.service.search;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xlenc.service.search.schematypes.TypeInfo;
-import com.xlenc.service.search.schematypes.question.QuestionData;
 import com.yammer.dropwizard.lifecycle.Managed;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -37,22 +36,16 @@ public class SearchServer implements SearchPersistence, Managed {
     }
 
     @Override
-    public Object updateIndexDocument(String index, String type, String id, Object itemToIndex) {
+    public Object updateIndexDocument(String index, String type, String id, String itemToIndex) {
         if (itemToIndex == null) {
             return null;
         }
         return updateIndex(index, type, id, itemToIndex);
     }
 
-    private Object updateIndex(String index, String type, String id, Object itemToIndex) {
+    private Object updateIndex(String index, String type, String id, String itemToIndex) {
         String source = null;
-        ObjectMapper mapperES = new ObjectMapper();
-        try{
-            source = mapperES.writeValueAsString(itemToIndex);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        final IndexResponse indexResponse = client.prepareIndex(index, type, id).setSource(source).execute().actionGet();
+        final IndexResponse indexResponse = client.prepareIndex(index, type, id).setSource(itemToIndex).execute().actionGet();
         return new HashMap<String, Object>() {{
             put("ok", true);
             put("_id", indexResponse.getId());
@@ -65,10 +58,9 @@ public class SearchServer implements SearchPersistence, Managed {
     @Override
     public Object getIndexDocument(String index, String type, String id) {
         final GetResponse getResponse = client.prepareGet(index, type, id).execute().actionGet();
-        ObjectMapper objectMapper = new ObjectMapper();
         Object existingData = null;
         try {
-            existingData = objectMapper.readValue(getResponse.getSourceAsString(), TypeInfo.getMappingClasses().get(type));
+            existingData = getResponse.getSourceAsString();
         }  catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,6 +1,5 @@
 package com.xlenc.service.search;
 
-import com.xlenc.service.search.schematypes.question.QuestionData;
 
 /**
  * User: Michael Williams
@@ -8,7 +7,7 @@ import com.xlenc.service.search.schematypes.question.QuestionData;
  * Time: 11:55 AM
  */
 public interface SearchPersistence {
-    Object updateIndexDocument(String index, String type, String id, Object itemToIndex);
+    Object updateIndexDocument(String index, String type, String id, String data);
     Object getIndexDocument(String index, String type, String id);
     Object deleteIndexDocument(String index, String type, String id);
 }
