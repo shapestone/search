@@ -1,6 +1,5 @@
 package com.xlenc.service.search;
 
-import java.util.Map;
 
 /**
  * User: Michael Williams
@@ -15,8 +14,15 @@ public class SearchService {
         this.searchPersistence = searchPersistence;
     }
 
-    public Map<String, Object> addIndexItem(String index, String type, String id, Map<String, Object> map) {
-        return searchPersistence.addIndexItem(index, type, id, map);
+    public Object updateIndexDocument(String index, String type, String id, String data) {
+        return searchPersistence.updateIndexDocument(index, type, id, data);
     }
 
+    public Object getIndexDocument(String index, String type, String id) {
+        return searchPersistence.getIndexDocument(index, type, id);
+    }
+
+    public Object deleteIndexDocument(String index, String type, String id) {
+        return searchPersistence.deleteIndexDocument(index, type, id);
+    }
 }

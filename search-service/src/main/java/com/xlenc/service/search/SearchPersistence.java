@@ -1,6 +1,5 @@
 package com.xlenc.service.search;
 
-import java.util.Map;
 
 /**
  * User: Michael Williams
@@ -8,5 +7,7 @@ import java.util.Map;
  * Time: 11:55 AM
  */
 public interface SearchPersistence {
-    Map<String,Object> addIndexItem(String index, String type, String id, Map<String, Object> map);
+    Object updateIndexDocument(String index, String type, String id, String data);
+    Object getIndexDocument(String index, String type, String id);
+    Object deleteIndexDocument(String index, String type, String id);
 }
